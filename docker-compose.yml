@@ -1,0 +1,24 @@
+webserver:
+    image: pitkley/paperless
+    ports:
+        - "8000:8000"
+    volumes_from:
+        - data
+    environment:
+        - PAPERLESS_PASSPHRASE="CHANGE_ME"
+    command: ["runserver", "0.0.0.0:8000"]
+
+consumer:
+    image: pitkley/paperless
+    volumes_from:
+        - data
+    environment:
+        - PAPERLESS_PASSPHRASE="CHANGE_ME"
+    command: ["document_consumer"]
+
+data:
+    image: pitkley/paperless
+    volumes:
+        - /usr/src/paperless/data
+        - /data
+    entrypoint: ["/bin/true"]
