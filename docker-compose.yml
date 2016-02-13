@@ -5,7 +5,7 @@ webserver:
     volumes_from:
         - data
     environment:
-        - PAPERLESS_PASSPHRASE="CHANGE_ME"
+        - PAPERLESS_PASSPHRASE=CHANGE_ME
     command: ["runserver", "0.0.0.0:8000"]
 
 consumer:
@@ -13,8 +13,8 @@ consumer:
     volumes_from:
         - data
     environment:
-        - PAPERLESS_CONSUME="/data"
-        - PAPERLESS_PASSPHRASE="CHANGE_ME"
+        - PAPERLESS_CONSUME=/data
+        - PAPERLESS_PASSPHRASE=CHANGE_ME
     command: ["document_consumer"]
 
 data:
