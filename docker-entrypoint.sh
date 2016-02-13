@@ -15,6 +15,8 @@ map_uidgid() {
 }
 
 check_consume_directory() {
+    [ -z "$PAPERLESS_CONSUME" ] && return
+
     if [ ! -d "$PAPERLESS_CONSUME" ]; then
         mkdir -p "$PAPERLESS_CONSUME"
     fi
@@ -22,7 +24,9 @@ check_consume_directory() {
 
 set_permissions() {
     chown -Rh paperless:paperless /usr/src/paperless
-    chown -Rh paperless:paperless "$PAPERLESS_CONSUME"
+    if [ ! -z "$PAPERLESS_CONSUME" ]; then
+        chown -Rh paperless:paperless "$PAPERLESS_CONSUME"
+    fi
 }
 
 initialize() {
