@@ -11,11 +11,11 @@ This README is very bare right now, to be extended.
 
 1. Create and start:
 
-      docker-compose up -d`
+       docker-compose up -d
 
 1. Create the superuser interactively (adapt `paperless_data_1` to your situation):
 
-      docker run --rm -it --volumes-from paperless_data_1 pitkley/paperless createsuperuser`
+       docker run --rm -it --volumes-from paperless_data_1 pitkley/paperless createsuperuser
 
 1. Connect and test
 
