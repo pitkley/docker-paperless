@@ -4,6 +4,7 @@ MAINTAINER Pit Kleyersburg <pitkley@googlemail.com>
 # Install dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        sudo \
         tesseract-ocr tesseract-ocr-eng imagemagick ghostscript \
     && rm -rf /var/lib/apt/lists/*
 
@@ -18,15 +19,17 @@ RUN mkdir -p /usr/src/paperless \
 WORKDIR /usr/src/paperless/src
 RUN ./manage.py migrate
 
-# Create data-directory
-RUN mkdir /data
-ENV PAPERLESS_CONSUME "/data"
-
-# Mount volumes
-VOLUME ["/usr/src/paperless/data", "/usr/src/paperless/media", "/data"]
+# Create user
+RUN groupadd -g 1000 paperless \
+    && useradd -u 1000 -g 1000 -d /usr/src/paperless paperless \
+    && chown -Rh paperless:paperless /usr/src/paperless
 
 # Setup entrypoint
-COPY ./docker-entrypoint.sh /
-ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY docker-entrypoint.sh /sbin/docker-entrypoint.sh
+RUN chmod 755 /sbin/docker-entrypoint.sh
 
+# Mount volumes
+VOLUME ["/usr/src/paperless/data", "/usr/src/paperless/media"]
+
+ENTRYPOINT ["/sbin/docker-entrypoint.sh"]
 CMD ["--help"]
