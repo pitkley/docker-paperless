@@ -20,5 +20,6 @@ data:
     image: pitkley/paperless
     volumes:
         - /usr/src/paperless/data
+        - /usr/src/paperless/media
         - /data
     entrypoint: ["/bin/true"]

@@ -23,7 +23,7 @@ RUN mkdir /data
 ENV PAPERLESS_CONSUME "/data"
 
 # Mount volumes
-VOLUME ["/usr/src/paperless/data", "/data"]
+VOLUME ["/usr/src/paperless/data", "/usr/src/paperless/media", "/data"]
 
 # Setup entrypoint
 COPY ./docker-entrypoint.sh /
