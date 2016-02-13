@@ -35,9 +35,45 @@ initialize() {
     set_permissions
 }
 
+install_languages() {
+    local langs="$1"
+    read -ra langs <<<"$langs"
+
+    # Check that it is not empty
+    if [ ${#langs[@]} -eq 0 ]; then
+        return
+    fi
+
+    # Update apt-lists
+    apt-get update
+
+    # Loop over languages to be installed
+    for lang in "${langs[@]}"; do
+        pkg="tesseract-ocr-$lang"
+        if dpkg -s "$pkg" 2>&1 > /dev/null; then
+            continue
+        fi
+
+        if ! apt-cache show "$pkg" 2>&1 > /dev/null; then
+            continue
+        fi
+
+        apt-get install "$pkg"
+    done
+
+    # Remove apt lists
+    rm -rf /var/lib/apt/lists/*
+}
+
 
 if [[ "$1" != "/"* ]]; then
     initialize
+
+    # Install additional languages if specified
+    if [ ! -z "$PAPERLESS_LANGUAGES"  ]; then
+        install_languages "$PAPERLESS_LANGUAGES"
+    fi
+
     exec sudo -HEu paperless "/usr/src/paperless/src/manage.py" "$@"
 fi
 
