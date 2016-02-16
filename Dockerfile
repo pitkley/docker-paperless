@@ -9,14 +9,19 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone and install paperless
-ENV PAPERLESS_COMMIT aea4af5d3b93c336b5e519d3c80cb733a8f5797a
+ENV PAPERLESS_COMMIT bbe7a02b4d95973b88c140a9a65a3b77e9890395
 RUN mkdir -p /usr/src/paperless \
     && git clone https://github.com/danielquinn/paperless.git /usr/src/paperless \
     && (cd /usr/src/paperless && git checkout -q $PAPERLESS_COMMIT) \
-    && (cd /usr/src/paperless && pip install -r requirements.txt)
+    && (cd /usr/src/paperless && pip install --no-cache-dir -r requirements.txt)
+
+# Set consumption directory
+ENV PAPERLESS_CONSUME /consume
+RUN mkdir -p $PAPERLESS_CONSUME
 
 # Migrate database
 WORKDIR /usr/src/paperless/src
+RUN mkdir -p /usr/src/paperless/data
 RUN ./manage.py migrate
 
 # Create user
@@ -29,7 +34,7 @@ COPY docker-entrypoint.sh /sbin/docker-entrypoint.sh
 RUN chmod 755 /sbin/docker-entrypoint.sh
 
 # Mount volumes
-VOLUME ["/usr/src/paperless/data", "/usr/src/paperless/media"]
+VOLUME ["/usr/src/paperless/data", "/usr/src/paperless/media", "/consume"]
 
 ENTRYPOINT ["/sbin/docker-entrypoint.sh"]
 CMD ["--help"]
