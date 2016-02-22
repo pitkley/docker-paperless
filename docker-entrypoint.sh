@@ -1,14 +1,6 @@
 #!/bin/bash
 set -e
 
-check_consume_directory() {
-    [ -z "$PAPERLESS_CONSUME" ] && return
-
-    if [ ! -d "$PAPERLESS_CONSUME" ]; then
-        mkdir -p "$PAPERLESS_CONSUME"
-    fi
-}
-
 # Source: https://github.com/sameersbn/docker-gitlab/
 map_uidgid() {
     USERMAP_ORIG_UID=$(id -u paperless)
@@ -23,14 +15,15 @@ map_uidgid() {
 }
 
 set_permissions() {
+    # Set permissions for consumption directory
+    chgrp paperless "$PAPERLESS_CONSUME"
+    chmod g+x "$PAPERLESS_CONSUME"
+
+    # Set permissions for application directory
     chown -Rh paperless:paperless /usr/src/paperless
-    if [ ! -z "$PAPERLESS_CONSUME" ]; then
-        chown -Rh paperless:paperless "$PAPERLESS_CONSUME"
-    fi
 }
 
 initialize() {
-    check_consume_directory
     map_uidgid
     set_permissions
 }
@@ -70,8 +63,8 @@ if [[ "$1" != "/"* ]]; then
     initialize
 
     # Install additional languages if specified
-    if [ ! -z "$PAPERLESS_LANGUAGES"  ]; then
-        install_languages "$PAPERLESS_LANGUAGES"
+    if [ ! -z "$PAPERLESS_OCR_LANGUAGES"  ]; then
+        install_languages "$PAPERLESS_OCR_LANGUAGES"
     fi
 
     exec sudo -HEu paperless "/usr/src/paperless/src/manage.py" "$@"

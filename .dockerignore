@@ -1,2 +1,4 @@
 README.md
-docker-compose.yml
+LICENSE
+docker-compose.env.example
+docker-compose.yml.example
