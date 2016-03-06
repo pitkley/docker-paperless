@@ -9,19 +9,23 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone and install paperless
-ENV PAPERLESS_COMMIT b400c24dc8cb233c496b14d56f8df8c739df4975
+ENV PAPERLESS_COMMIT 2fba41ad7530699e30fa2a0f1306c5811070665f
 RUN mkdir -p /usr/src/paperless \
     && git clone https://github.com/danielquinn/paperless.git /usr/src/paperless \
     && (cd /usr/src/paperless && git checkout -q $PAPERLESS_COMMIT) \
     && (cd /usr/src/paperless && pip install --no-cache-dir -r requirements.txt)
 
+# Create directories
+RUN mkdir -p /usr/src/paperless/data
+RUN mkdir -p /usr/src/paperless/media/documents/originals
+RUN mkdir -p /usr/src/paperless/media/documents/thumbnails
+
 # Set consumption directory
-ENV PAPERLESS_CONSUME /consume
-RUN mkdir -p $PAPERLESS_CONSUME
+ENV PAPERLESS_CONSUMPTION_DIRECTORY /consume
+RUN mkdir -p $PAPERLESS_CONSUMPTION_DIRECTORY
 
 # Migrate database
 WORKDIR /usr/src/paperless/src
-RUN mkdir -p /usr/src/paperless/data
 RUN ./manage.py migrate
 
 # Create user
