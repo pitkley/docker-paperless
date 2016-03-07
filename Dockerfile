@@ -21,8 +21,8 @@ RUN mkdir -p /usr/src/paperless/media/documents/originals
 RUN mkdir -p /usr/src/paperless/media/documents/thumbnails
 
 # Set consumption directory
-ENV PAPERLESS_CONSUMPTION_DIRECTORY /consume
-RUN mkdir -p $PAPERLESS_CONSUMPTION_DIRECTORY
+ENV PAPERLESS_CONSUMPTION_DIR /consume
+RUN mkdir -p $PAPERLESS_CONSUMPTION_DIR
 
 # Migrate database
 WORKDIR /usr/src/paperless/src
