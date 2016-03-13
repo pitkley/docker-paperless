@@ -5,11 +5,11 @@ MAINTAINER Pit Kleyersburg <pitkley@googlemail.com>
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         sudo \
-        tesseract-ocr tesseract-ocr-eng imagemagick ghostscript \
+        tesseract-ocr tesseract-ocr-eng imagemagick ghostscript unpaper \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone and install paperless
-ENV PAPERLESS_COMMIT 2fba41ad7530699e30fa2a0f1306c5811070665f
+ENV PAPERLESS_COMMIT 9267794c3353f3f52fb75888e19a8d57b94b0299
 RUN mkdir -p /usr/src/paperless \
     && git clone https://github.com/danielquinn/paperless.git /usr/src/paperless \
     && (cd /usr/src/paperless && git checkout -q $PAPERLESS_COMMIT) \
