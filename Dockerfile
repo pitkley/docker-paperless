@@ -34,8 +34,8 @@ RUN groupadd -g 1000 paperless \
     && chown -Rh paperless:paperless /usr/src/paperless
 
 # Setup entrypoint
-COPY docker-entrypoint.sh /sbin/docker-entrypoint.sh
-RUN chmod 755 /sbin/docker-entrypoint.sh
+RUN cp /usr/src/paperless/scripts/docker-entrypoint.sh /sbin/docker-entrypoint.sh \
+    && chmod 755 /sbin/docker-entrypoint.sh
 
 # Mount volumes
 VOLUME ["/usr/src/paperless/data", "/usr/src/paperless/media", "/consume"]
