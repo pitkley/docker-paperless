@@ -13,7 +13,10 @@ ENV PAPERLESS_COMMIT 50896f48db03be0e1b694140737dce7efc748be9
 RUN mkdir -p /usr/src/paperless \
     && git clone https://github.com/danielquinn/paperless.git /usr/src/paperless \
     && (cd /usr/src/paperless && git checkout -q $PAPERLESS_COMMIT) \
-    && (cd /usr/src/paperless && pip install --no-cache-dir -r requirements.txt)
+    && (cd /usr/src/paperless && pip install --no-cache-dir -r requirements.txt) \
+    # Change `DEBUG` and `ALLOWED_HOSTS`
+    && sed -i 's/DEBUG = True/DEBUG = False/' /usr/src/paperless/src/paperless/settings.py \
+    && sed -i "s/ALLOWED_HOSTS = \[\]/ALLOWED_HOSTS = \[\'\*\'\]/" /usr/src/paperless/src/paperless/settings.py
 
 # Create directories
 RUN mkdir -p /usr/src/paperless/data
