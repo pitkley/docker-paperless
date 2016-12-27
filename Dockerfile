@@ -9,7 +9,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone and install paperless
-ENV PAPERLESS_COMMIT 50896f48db03be0e1b694140737dce7efc748be9
+ENV PAPERLESS_COMMIT 9ea39aeecb4f806b55c751c0702190fa604f6ff9
 RUN mkdir -p /usr/src/paperless \
     && git clone https://github.com/danielquinn/paperless.git /usr/src/paperless \
     && (cd /usr/src/paperless && git checkout -q $PAPERLESS_COMMIT) \
