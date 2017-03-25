@@ -14,7 +14,7 @@ RUN mkdir -p /usr/src/paperless \
     && git clone https://github.com/danielquinn/paperless.git /usr/src/paperless \
     && (cd /usr/src/paperless && git checkout -q $PAPERLESS_COMMIT) \
     && (cd /usr/src/paperless && pip install --no-cache-dir -r requirements.txt) \
-    # Change `DEBUG` and `ALLOWED_HOSTS`
+    # Disable `DEBUG`
     && sed -i 's/DEBUG = True/DEBUG = False/' /usr/src/paperless/src/paperless/settings.py
 
 # Create directories
