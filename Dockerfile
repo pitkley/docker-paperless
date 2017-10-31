@@ -1,19 +1,36 @@
-FROM python:3.6
+FROM python:3.6-alpine3.6
 
-# Install dependencies
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        sudo \
-        tesseract-ocr tesseract-ocr-eng imagemagick ghostscript unpaper \
-    && rm -rf /var/lib/apt/lists/*
+ENV PAPERLESS_COMMIT=af4623e60563f5e4328e87ec8027f79804f8d08a \
+    PAPERLESS_CONSUMPTION_DIR=/consume \
+    PAPERLESS_EXPORT_DIR=/export
 
-ENV PAPERLESS_COMMIT af4623e60563f5e4328e87ec8027f79804f8d08a
-ENV PAPERLESS_CONSUMPTION_DIR /consume
-ENV PAPERLESS_EXPORT_DIR /export
+COPY musl-find_library.patch /tmp/musl-find_library.patch
+COPY docker-entrypoint.sh /sbin/docker-entrypoint.sh
 
 RUN \
+    # Add edge repositories
+    echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories \
+    && echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories \
+    # Install dependencies
+    && apk add --no-cache --virtual .build-deps \
+        gcc \
+        git \
+        libjpeg-turbo-dev \
+        musl-dev \
+        zlib-dev \
+    && apk add --no-cache \
+        bash \
+        ghostscript@edge \
+        gnupg \
+        imagemagick@edge \
+        libmagic \
+        sudo \
+        tesseract-ocr@edge \
+        unpaper@edge \
+    # Patch `ctypes.util.find_library`
+    && patch -p1 /usr/local/lib/python3.6/ctypes/util.py /tmp/musl-find_library.patch \
     # Clone and install paperless
-    mkdir -p /usr/src/paperless \
+    && mkdir -p /usr/src/paperless \
     && git clone https://github.com/danielquinn/paperless.git /usr/src/paperless \
     && (cd /usr/src/paperless && git checkout -q $PAPERLESS_COMMIT) \
     && (cd /usr/src/paperless && pip install --no-cache-dir -r requirements.txt) \
@@ -25,12 +42,14 @@ RUN \
     # Migrate database
     && (cd /usr/src/paperless/src && ./manage.py migrate) \
     # Create user
-    && groupadd -g 1000 paperless \
-    && useradd -u 1000 -g 1000 -d /usr/src/paperless paperless \
+    && addgroup -g 1000 paperless \
+    && adduser -D -u 1000 -G paperless -h /usr/src/paperless paperless \
     && chown -Rh paperless:paperless /usr/src/paperless \
     # Setup entrypoint
-    && cp /usr/src/paperless/scripts/docker-entrypoint.sh /sbin/docker-entrypoint.sh \
-    && chmod 755 /sbin/docker-entrypoint.sh
+    #&& cp /usr/src/paperless/scripts/docker-entrypoint.sh /sbin/docker-entrypoint.sh \
+    && chmod 755 /sbin/docker-entrypoint.sh \
+    # Remove build dependencies
+    && apk del --force .build-deps
 
 WORKDIR /usr/src/paperless/src
 
