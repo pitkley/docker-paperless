@@ -1,5 +1,4 @@
-FROM python:3.5.2
-MAINTAINER Pit Kleyersburg <pitkley@googlemail.com>
+FROM python:3.6
 
 # Install dependencies
 RUN apt-get update \
