@@ -7,7 +7,7 @@ RUN apt-get update \
         tesseract-ocr tesseract-ocr-eng imagemagick ghostscript unpaper \
     && rm -rf /var/lib/apt/lists/*
 
-ENV PAPERLESS_COMMIT bd67b53d50b494854e1e4423d7efcf3d2cea449e
+ENV PAPERLESS_COMMIT 1cb5bbd07d99046b702b558fb585bd8161176fd8
 ENV PAPERLESS_CONSUMPTION_DIR /consume
 ENV PAPERLESS_EXPORT_DIR /export
 
