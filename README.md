@@ -1,3 +1,9 @@
+# DEPRECATION NOTICE!
+
+Please switch to the [**official** `danielquinn/paperless` image](https://hub.docker.com/r/danielquinn/paperless/) on Docker Hub! It does work identically and does not require you modifiying your configuration besides switching from `pitkley/paperless` to `danielquinn/paperless`.
+
+(This image will keep tracking the official GitHub-repository for the foreseeable future, but I still encourage you to switch!)
+
 # Paperless Docker container
 
 Docker image for [Paperless](https://github.com/danielquinn/paperless/).

@@ -1,22 +1,32 @@
-FROM python:3.6
+FROM alpine:3.7
 
-# Install dependencies
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        sudo \
-        tesseract-ocr tesseract-ocr-eng imagemagick ghostscript unpaper \
-    && rm -rf /var/lib/apt/lists/*
+LABEL maintainer="Pit Kleyersburg <pitkley@googlemail.com>" \
+    contributors="The Paperless Project https://github.com/danielquinn/paperless, Guy Addadi <addadi@gmail.com>, Sven Fischer <git-dev@linux4tw.de>"
 
 ENV PAPERLESS_COMMIT 9faf0a102edaed31c0901b93d7949040b1454a33
 ENV PAPERLESS_CONSUMPTION_DIR /consume
 ENV PAPERLESS_EXPORT_DIR /export
 
 RUN \
+    # Install required dependencies
+    apk --no-cache --update add \
+        python3 gnupg libmagic bash \
+        sudo poppler tesseract-ocr imagemagick ghostscript unpaper \
+    # Install temporary build dependencies
+    && apk --no-cache add --virtual .build-dependencies \
+        git python3-dev poppler-dev gcc g++ musl-dev zlib-dev jpeg-dev \
+    # Bootstrap pip
+    && python3 -m ensurepip \
+    && rm -r /usr/lib/python*/ensurepip \
     # Clone and install paperless
-    mkdir -p /usr/src/paperless \
-    && git clone https://github.com/danielquinn/paperless.git /usr/src/paperless \
-    && (cd /usr/src/paperless && git checkout -q $PAPERLESS_COMMIT) \
-    && (cd /usr/src/paperless && pip install --no-cache-dir -r requirements.txt) \
+    && mkdir -p /usr/src/paperless \
+    && (cd /usr/src/paperless \
+        # Only fetch given commit
+        && git init \
+        && git fetch --depth=1 https://github.com/danielquinn/paperless.git "$PAPERLESS_COMMIT" \
+        && git checkout -q "$PAPERLESS_COMMIT" \
+        # Install requirements
+        && pip3 install --no-cache-dir -r requirements.txt) \
     # Disable `DEBUG`
     && sed -i 's/DEBUG = True/DEBUG = False/' /usr/src/paperless/src/paperless/settings.py \
     # Create consumption and export directory
@@ -25,12 +35,13 @@ RUN \
     # Migrate database
     && (cd /usr/src/paperless/src && ./manage.py migrate) \
     # Create user
-    && groupadd -g 1000 paperless \
-    && useradd -u 1000 -g 1000 -d /usr/src/paperless paperless \
+    && addgroup -g 1000 paperless \
+    && adduser -D -u 1000 -G paperless -h /usr/src/paperless paperless \
     && chown -Rh paperless:paperless /usr/src/paperless \
     # Setup entrypoint
     && cp /usr/src/paperless/scripts/docker-entrypoint.sh /sbin/docker-entrypoint.sh \
     && chmod 755 /sbin/docker-entrypoint.sh
+
 
 WORKDIR /usr/src/paperless/src
 
