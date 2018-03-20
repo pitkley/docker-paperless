@@ -3,7 +3,7 @@ FROM alpine:3.7
 LABEL maintainer="Pit Kleyersburg <pitkley@googlemail.com>" \
     contributors="The Paperless Project https://github.com/danielquinn/paperless, Guy Addadi <addadi@gmail.com>, Sven Fischer <git-dev@linux4tw.de>"
 
-ENV PAPERLESS_COMMIT f778d3a6e3c4cd52cc412771235f48fdcb1b3b5a
+ENV PAPERLESS_COMMIT f61fa0699328c49d34db86e8b41e36b4bf33b2cc
 ENV PAPERLESS_CONSUMPTION_DIR /consume
 ENV PAPERLESS_EXPORT_DIR /export
 
