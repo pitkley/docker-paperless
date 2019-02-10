@@ -11,7 +11,7 @@ RUN \
     # Install required dependencies
     apk --no-cache --update add \
         python3 gnupg libmagic bash \
-        sudo poppler tesseract-ocr imagemagick ghostscript unpaper \
+        sudo poppler tesseract-ocr imagemagick ghostscript unpaper optipng \
     # Install temporary build dependencies
     && apk --no-cache add --virtual .build-dependencies \
         git python3-dev poppler-dev gcc g++ musl-dev zlib-dev jpeg-dev postgresql-dev \
