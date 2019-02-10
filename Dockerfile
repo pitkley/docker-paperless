@@ -14,7 +14,7 @@ RUN \
         sudo poppler tesseract-ocr imagemagick ghostscript unpaper \
     # Install temporary build dependencies
     && apk --no-cache add --virtual .build-dependencies \
-        git python3-dev poppler-dev gcc g++ musl-dev zlib-dev jpeg-dev \
+        git python3-dev poppler-dev gcc g++ musl-dev zlib-dev jpeg-dev postgresql-dev \
     # Bootstrap pip
     && python3 -m ensurepip \
     && rm -r /usr/lib/python*/ensurepip \
